@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abhishek Nadgeri</title>
+  <meta name="description" content="Abhishek Nadgeri is a CS PhD student at Stony Brook University working on LLM post-training, alignment, reward modeling, robust evaluation, and AI safety.">
+  <meta name="author" content="Abhishek Nadgeri">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fcfcfb">
+  <script>
+    // Apply the visitor's saved theme, or else their OS setting, before the page paints.
+    (() => {
+      let saved = null;
+      try { saved = localStorage.getItem("theme"); } catch {}
+      const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+    })();
+  </script>
+  <link rel="canonical" href="https://nadgeri14.github.io/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/source-serif-4-roman.woff2" as="font" type="font/woff2" crossorigin>
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Abhishek Nadgeri">
+  <meta property="og:title" content="Abhishek Nadgeri">
+  <meta property="og:description" content="CS PhD student at Stony Brook University. LLM post-training, alignment, reward modeling, robust evaluation, and AI safety.">
+  <meta property="og:url" content="https://nadgeri14.github.io/">
+  <meta property="og:image" content="https://nadgeri14.github.io/photo.jpg">
+  <meta property="og:image:alt" content="Profile image for Abhishek Nadgeri">
+  <meta name="twitter:card" content="summary">
+  <style>
+    /* Source Serif 4 (SIL Open Font License, see fonts/OFL.txt), self-hosted. */
+    @font-face {
+      font-family: "Source Serif 4";
+      font-style: normal;
+      font-weight: 200 900;
+      font-display: swap;
+      src: url("fonts/source-serif-4-roman.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Source Serif 4";
+      font-style: italic;
+      font-weight: 200 900;
+      font-display: swap;
+      src: url("fonts/source-serif-4-italic.woff2") format("woff2");
+    }
+
+    /* Colors: one accent, reserved for links. The script in <head> sets
+       data-theme="dark" from the visitor's choice or OS setting; the toggle
+       button switches it. Dark colors apply on screen only, so print stays light. */
+    :root {
+      color-scheme: light;
+      --bg: #fcfcfb;
+      --ink: #1d1f22;
+      --ink-soft: #3f454c;
+      --muted: #626b74;
+      --accent: #2c5d88;
+      --accent-hover: #1b4268;
+      --surface: #eff3f7;
+      --border: #d9dfe5;
+      --rule: #e5e9ed;
+      --available: #2e9d68;
+      --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    @media screen {
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #111315;
+        --ink: #e9e7e4;
+        --ink-soft: #c5c9cd;
+        --muted: #959ea7;
+        --accent: #8ab4dc;
+        --accent-hover: #b6d1eb;
+        --surface: #1c2126;
+        --border: #333a42;
+        --rule: #262b31;
+        --available: #4cc38a;
+      }
+      [data-theme="dark"] body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      position: relative;
+      max-width: 688px;
+      margin: 0 auto;
+      padding: 88px 24px 40px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      font-optical-sizing: auto;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+    ::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+    p { margin: 0; }
+    strong { font-weight: 600; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* Theme toggle: a moon in light mode, a sun in dark mode. The script at the
+       end of the page reveals it, so it stays hidden without JavaScript. */
+    .theme-toggle {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .theme-toggle[hidden] { display: none; }
+    .theme-toggle:hover { border-color: currentColor; color: var(--accent); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    [data-theme="dark"] .icon-moon,
+    :root:not([data-theme="dark"]) .icon-sun { display: none; }
+
+    /* Header */
+    .identity {
+      display: grid;
+      grid-template-columns: 168px minmax(0, 1fr);
+      align-items: center;
+      gap: 32px;
+    }
+    .portrait {
+      display: block;
+      width: 168px;
+      height: auto;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: 10px;
+      background: var(--surface);
+      box-shadow: 0 1px 2px rgb(16 24 32 / 8%), 0 14px 30px -16px rgb(16 24 32 / 45%);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2.25rem;
+      font-weight: 600;
+      line-height: 1.12;
+      letter-spacing: -0.021em;
+      text-wrap: balance;
+    }
+    .affiliation { color: var(--ink-soft); font-size: 1.0625rem; line-height: 1.55; text-wrap: pretty; }
+    .profile-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .profile-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--ink-soft);
+    }
+    .profile-links a:hover { border-color: currentColor; color: var(--accent); text-decoration: none; }
+    .profile-links a:focus-visible { border-radius: 999px; }
+    .email {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .email svg { flex: none; }
+    .internships {
+      position: relative;
+      margin-top: 36px;
+      padding-left: 20px;
+      color: var(--ink-soft);
+      font-size: 1rem;
+      text-wrap: pretty;
+    }
+    .internships strong { color: var(--ink); }
+    .internships::before {
+      content: "";
+      position: absolute;
+      top: calc(0.825em - 4px);
+      left: 1px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--available);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--available) 22%, transparent);
+    }
+
+    /* Sections */
+    main > section { margin-top: 44px; }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 0 14px;
+      font-size: 1.375rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+    h2::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+    .goal, .interests, .project-question { color: var(--ink-soft); font-size: 1rem; line-height: 1.6; text-wrap: pretty; }
+    .goal { margin-bottom: 8px; }
+    .interests strong { color: var(--ink); }
+    .project-title { margin: 0 0 2px; font-size: 1rem; font-weight: 600; line-height: 1.6; }
+
+    /* Publications: a scrollable list on larger screens. Its edges fade out to
+       show that more papers follow; the padding at each end is as tall as that
+       end's fade, so the first and last papers are fully visible when reached. */
+    .publications-scroll {
+      max-height: min(30rem, 70vh);
+      overflow-y: auto;
+      margin: -8px -12px 0 0;
+      padding: 12px 12px 56px 0;
+      scrollbar-gutter: stable;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+      -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 56px), transparent);
+      mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 56px), transparent);
+    }
+    .publications-scroll:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+      border-radius: 4px;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .publications-scroll::-webkit-scrollbar { width: 6px; }
+    .publications-scroll::-webkit-scrollbar-track { background: transparent; }
+    .publications-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .publications { margin: 0; padding: 0; list-style: none; }
+    .publications li {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .publications li + li { margin-top: 22px; }
+    .paper-year {
+      padding-top: 3px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      line-height: 1.6;
+      font-variant-numeric: tabular-nums;
+    }
+    .paper-title { display: block; font-size: 1.0625rem; font-weight: 500; line-height: 1.4; text-wrap: pretty; }
+    .paper-authors { margin-top: 4px; color: var(--muted); font-size: 0.9375rem; line-height: 1.5; }
+    .paper-authors strong { color: var(--ink); }
+    .paper-venue {
+      display: inline-block;
+      margin-left: 2px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--ink-soft);
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 48px 20px 32px; font-size: 17px; }
+      .theme-toggle { top: 16px; right: 20px; }
+      .identity { grid-template-columns: 1fr; gap: 22px; }
+      .portrait { width: 132px; }
+      h1 { font-size: 2rem; }
+      .profile-links { gap: 6px; }
+      .profile-links a { padding: 0 9px; }
+      .internships { margin-top: 28px; }
+      main > section { margin-top: 36px; }
+      h2 { font-size: 1.25rem; }
+      /* Phones scroll the page itself, so the list is shown in full. */
+      .publications-scroll { max-height: none; overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
+      .publications li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+      .paper-year { padding-top: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      a, .theme-toggle { transition: none; }
+    }
+    @media print {
+      :root { --bg: #fff; }
+      .theme-toggle { display: none; }
+      body { max-width: none; padding: 0; font-size: 11pt; }
+      .portrait { box-shadow: none; }
+      .profile-links a { height: auto; padding: 0; border: 0; }
+      main > section { margin-top: 24px; }
+      .publications-scroll { max-height: none; overflow: visible; margin: 0; padding: 0; scrollbar-gutter: auto; -webkit-mask-image: none; mask-image: none; }
+      .publications li { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    EDITING: All homepage text and styles live in this file. No build is needed.
+    Your photo is headshot.jpg (a 4:5 crop of photo.jpg, which is kept for link
+    previews); add your CV as cv.pdf beside this file.
+    Papers are listed newest first. To add the RLVR paper, copy the first
+    publication <li> and update its year, title, authors, and venue.
+    Update the footer's date whenever you update the content.
+  -->
+  <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" hidden>
+    <svg class="icon-moon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    <svg class="icon-sun" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+  </button>
+  <main>
+    <header>
+      <div class="identity">
+        <img class="portrait" src="headshot.jpg" width="480" height="600" alt="Abhishek Nadgeri">
+        <div class="profile-details">
+          <h1>Abhishek Nadgeri</h1>
+          <p class="affiliation">CS PhD student at Stony Brook University, advised by <a href="https://lunr.cs.stonybrook.edu/people.html">Prof. Niranjan Balasubramanian</a>.</p>
+          <ul class="profile-links" aria-label="Professional links">
+            <li><a href="cv.pdf">CV</a></li>
+            <li><a href="https://scholar.google.com/citations?user=b0FAYMkAAAAJ">Google Scholar</a></li>
+            <li><a href="https://github.com/nadgeri14">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/abhishek-nadgeri/">LinkedIn</a></li>
+            <li><a href="https://x.com/AbhishekNadgeri">X</a></li>
+          </ul>
+          <!-- Intentionally human-readable, without a plaintext mailto address. -->
+          <p class="email" id="email">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+            <span><span class="visually-hidden">Email: </span>abhisheksanjee.nadgeri [at] stonybrook [dot] edu</span>
+          </p>
+        </div>
+      </div>
+      <p class="internships">Looking for <strong>Summer 2027 research internships</strong> in post-training and alignment.</p>
+    </header>
+
+    <section aria-labelledby="research">
+      <h2 id="research">Research</h2>
+      <p class="goal">I want to build language models that learn what people actually want and can personalise according to them.</p>
+      <p class="interests"><strong>Interests:</strong> LLM post-training and alignment, reward modeling, robust evaluation, and AI safety.</p>
+    </section>
+
+    <section aria-labelledby="current-work">
+      <h2 id="current-work">Current work</h2>
+      <h3 class="project-title">Quality-aware RLVR for instruction following</h3>
+      <p class="project-question">When we train models to follow instructions, how do we keep the answer useful?</p>
+    </section>
+
+    <section aria-labelledby="publications">
+      <h2 id="publications">Publications</h2>
+      <!-- Each paper has a year, linked title, full authors, and venue. -->
+      <div class="publications-scroll" tabindex="0" role="region" aria-label="Publication list">
+        <ul class="publications">
+          <li>
+            <time class="paper-year" datetime="2024">2024</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://openreview.net/forum?id=uvFhCUPjtI">Beyond Spatio-Temporal Representations: Evolving Fourier Transform for Temporal Graphs</a>
+              <p class="paper-authors">Anson Bastos, Kuldeep Singh, <strong>Abhishek Nadgeri</strong>, Manish Singh, Toyotaro Suzumura. <span class="paper-venue">ICLR</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2023">2023</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://ojs.aaai.org/index.php/AAAI/article/view/25831">Learnable Spectral Wavelets on Dynamic Graphs to Capture Global Interactions</a>
+              <p class="paper-authors">Anson Bastos, <strong>Abhishek Nadgeri</strong>, Kuldeep Singh, Toyotaro Suzumura, Manish Singh. <span class="paper-venue">AAAI</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2022">2022</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://openreview.net/forum?id=aRsLetumx1">How Expressive are Transformers in Spectral Domain for Graphs?</a>
+              <p class="paper-authors">Anson Bastos, <strong>Abhishek Nadgeri</strong>, Kuldeep Singh, Hiroki Kanezashi, Toyotaro Suzumura, Isaiah Onando Mulang’. <span class="paper-venue">TMLR</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2021-08">2021</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://aclanthology.org/2021.findings-acl.48/">KGPool: Dynamic Knowledge Graph Context Selection for Relation Extraction</a>
+              <p class="paper-authors"><strong>Abhishek Nadgeri</strong>, Anson Bastos, Kuldeep Singh, Isaiah Onando Mulang’, Johannes Hoffart, Saeedeh Shekarpour, Vijay Saraswat. <span class="paper-venue">Findings of ACL</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2021-04">2021</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://arxiv.org/abs/2009.08694">RECON: Relation Extraction using Knowledge Graph Context in a Graph Neural Network</a>
+              <p class="paper-authors">Anson Bastos, <strong>Abhishek Nadgeri</strong>, Kuldeep Singh, Isaiah Onando Mulang’, Saeedeh Shekarpour, Johannes Hoffart, Manohar Kaul. <span class="paper-venue">WWW</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2020-11">2020</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://aclanthology.org/2020.intexsempar-1.1/">QA2Explanation: Generating and Evaluating Explanations for Question Answering Systems over Knowledge Graph</a>
+              <p class="paper-authors">Saeedeh Shekarpour, <strong>Abhishek Nadgeri</strong>, Kuldeep Singh. <span class="paper-venue">IntEx-SemPar @ EMNLP</span></p>
+            </div>
+          </li>
+          <li>
+            <time class="paper-year" datetime="2020-10">2020</time>
+            <div class="paper-details">
+              <a class="paper-title" href="https://arxiv.org/abs/2008.05190">Evaluating the Impact of Knowledge Graph Context on Entity Disambiguation Models</a>
+              <p class="paper-authors">Isaiah Onando Mulang’, Kuldeep Singh, Chaitali Prabhu, <strong>Abhishek Nadgeri</strong>, Johannes Hoffart, Jens Lehmann. <span class="paper-venue">CIKM</span></p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer>Last updated <time datetime="2026-10">October 2026</time>.</footer>
+  <script>
+    // Theme toggle. A choice made here is remembered; until then, the page
+    // follows the OS setting, including when it changes while the page is open.
+    (() => {
+      const root = document.documentElement;
+      const toggle = document.querySelector(".theme-toggle");
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const savedTheme = () => { try { return localStorage.getItem("theme"); } catch { return null; } };
+
+      const apply = (theme) => {
+        root.dataset.theme = theme;
+        toggle.setAttribute("aria-pressed", theme === "dark");
+        toggle.title = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+        themeColor.content = getComputedStyle(root).getPropertyValue("--bg").trim();
+      };
+
+      toggle.addEventListener("click", () => {
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        try { localStorage.setItem("theme", next); } catch {}
+        if (document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.startViewTransition(() => apply(next));
+        } else {
+          apply(next);
+        }
+      });
+      matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+        if (!savedTheme()) apply(event.matches ? "dark" : "light");
+      });
+
+      apply(root.dataset.theme);
+      toggle.hidden = false;
+    })();
+  </script>
+</body>
+</html>

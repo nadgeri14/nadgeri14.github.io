@@ -13,9 +13,10 @@ the button stays hidden.
   Colors are defined once at the top of the CSS (`:root` for light, and
   `:root[data-theme="dark"]` for dark); the single blue accent is reserved for
   links. Papers appear newest first with a year, title,
-  authors, and a venue tag. On larger screens the list scrolls inside the page,
-  with faded edges showing that more papers follow; on phones and in print it
-  shows in full. To add the RLVR paper, copy the first publication `<li>` and
+  authors, and a venue tag. On larger screens the list scrolls inside the page:
+  a visible scrollbar, a faded bottom edge, and a "3 more papers" pill (counted
+  by a small script; clicking it scrolls down) show that more papers follow. On
+  phones and in print it shows in full. To add the RLVR paper, copy the first publication `<li>` and
   update its citation. Wrap your name in `<strong>`.
 - **`headshot.jpg`** (480×600) is the photo shown on the page, a 4:5 crop of
   **`photo.jpg`**, your original from `Desktop/IMG_0254.jpg`. The original is

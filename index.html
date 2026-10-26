@@ -248,17 +248,18 @@
     .interests strong { color: var(--ink); }
     .project-title { margin: 0 0 2px; font-size: 1rem; font-weight: 600; line-height: 1.6; }
 
-    /* Publications: a scrollable list on larger screens. Its edges fade out to
-       show that more papers follow; the padding at each end is as tall as that
-       end's fade, so the first and last papers are fully visible when reached. */
+    /* Publications: a scrollable list on larger screens. Three cues show that
+       more papers follow: the bottom edge fades out, a thin scrollbar stays
+       visible, and a "N more papers" pill sits over the fade until the end of
+       the list. The padding at each end is as tall as that end's fade, so the
+       first and last papers are fully visible when reached. */
+    .publications-section { position: relative; }
     .publications-scroll {
       max-height: min(30rem, 70vh);
       overflow-y: auto;
       margin: -8px -12px 0 0;
       padding: 12px 12px 56px 0;
       scrollbar-gutter: stable;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 56px), transparent);
       mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 56px), transparent);
     }
@@ -269,9 +270,41 @@
       -webkit-mask-image: none;
       mask-image: none;
     }
+    /* Styled scrollbars stay visible in Chrome and Safari, rather than hiding
+       until scrolled as macOS overlay scrollbars do. The track spans only the
+       unfaded part of the list. */
     .publications-scroll::-webkit-scrollbar { width: 6px; }
-    .publications-scroll::-webkit-scrollbar-track { background: transparent; }
-    .publications-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .publications-scroll::-webkit-scrollbar-track { margin: 12px 0 56px; border-radius: 3px; background: var(--rule); }
+    .publications-scroll::-webkit-scrollbar-thumb { border-radius: 3px; background: color-mix(in srgb, var(--muted) 55%, transparent); }
+    @supports not selector(::-webkit-scrollbar) {
+      .publications-scroll { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) var(--rule); }
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg);
+      box-shadow: 0 6px 16px -10px rgb(16 24 32 / 40%);
+      color: var(--ink-soft);
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      transform: translateX(-50%);
+      transition: opacity 0.2s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .scroll-hint[hidden] { display: none; }
+    .scroll-hint:hover { border-color: currentColor; color: var(--accent); }
+    .scroll-hint.is-done { opacity: 0; pointer-events: none; }
     .publications { margin: 0; padding: 0; list-style: none; }
     .publications li {
       display: grid;
@@ -329,11 +362,12 @@
       h2 { font-size: 1.25rem; }
       /* Phones scroll the page itself, so the list is shown in full. */
       .publications-scroll { max-height: none; overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
+      .scroll-hint { display: none; }
       .publications li { grid-template-columns: minmax(0, 1fr); gap: 0; }
       .paper-year { padding-top: 0; }
     }
     @media (prefers-reduced-motion: reduce) {
-      a, .theme-toggle { transition: none; }
+      a, .theme-toggle, .scroll-hint { transition: none; }
     }
     @media print {
       :root { --bg: #fff; }
@@ -343,6 +377,7 @@
       .profile-links a { height: auto; padding: 0; border: 0; }
       main > section { margin-top: 24px; }
       .publications-scroll { max-height: none; overflow: visible; margin: 0; padding: 0; scrollbar-gutter: auto; -webkit-mask-image: none; mask-image: none; }
+      .scroll-hint { display: none; }
       .publications li { break-inside: avoid; }
       a { color: inherit; }
     }
@@ -397,7 +432,7 @@
       <p class="project-question">When we train models to follow instructions, how do we keep the answer useful?</p>
     </section>
 
-    <section aria-labelledby="publications">
+    <section class="publications-section" aria-labelledby="publications">
       <h2 id="publications">Publications</h2>
       <!-- Each paper has a year, linked title, full authors, and venue. -->
       <div class="publications-scroll" tabindex="0" role="region" aria-label="Publication list">
@@ -453,6 +488,11 @@
           </li>
         </ul>
       </div>
+      <!-- Shown by the script at the end of the page while more papers are below. -->
+      <div class="scroll-hint" aria-hidden="true" hidden>
+        <span>More papers</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
     </section>
   </main>
   <footer>Last updated <time datetime="2026-10">October 2026</time>.</footer>
@@ -487,6 +527,45 @@
 
       apply(root.dataset.theme);
       toggle.hidden = false;
+    })();
+
+    // Publications pill: counts the papers below the visible part of the list,
+    // and clicking it scrolls the next one to the top. It fades out at the end
+    // of the list, and stays hidden when the list isn't scrollable (phones).
+    (() => {
+      const list = document.querySelector(".publications-scroll");
+      const hint = document.querySelector(".scroll-hint");
+      const label = hint.querySelector("span");
+      const papers = [...list.querySelectorAll("li")];
+      const fade = 56; // Matches the bottom fade and padding in the CSS.
+
+      const below = () => {
+        const visibleEnd = list.getBoundingClientRect().bottom - fade;
+        return papers.filter((paper) => {
+          const box = paper.getBoundingClientRect();
+          return (box.top + box.bottom) / 2 > visibleEnd;
+        });
+      };
+      const update = () => {
+        const rest = list.scrollHeight > list.clientHeight ? below().length : 0;
+        if (rest) label.textContent = `${rest} more paper${rest === 1 ? "" : "s"}`;
+        hint.classList.toggle("is-done", !rest);
+      };
+
+      hint.addEventListener("click", () => {
+        const [next] = below();
+        if (!next) return;
+        list.scrollBy({
+          top: next.getBoundingClientRect().top - list.getBoundingClientRect().top - 12,
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+      });
+      list.addEventListener("scroll", update, { passive: true });
+      addEventListener("resize", update);
+      document.fonts?.ready.then(update);
+
+      update();
+      hint.hidden = false;
     })();
   </script>
 </body>
